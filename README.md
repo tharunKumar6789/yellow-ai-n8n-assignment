@@ -5,19 +5,20 @@
 
 ## 👨‍💻 Tharun Kumar
 
-This project is built using n8n to automate lead generation from GitHub.
+This project is built using n8n to automate high-value lead detection from GitHub.
 
-The workflow starts with a schedule trigger that runs automatically at intervals.  
-It fetches users who starred a GitHub repository using the GitHub API.  
-Then it extracts important details like username and profile link.  
+The workflow uses a schedule trigger to monitor stargazers of a GitHub repository.  
+For every new user, it fetches detailed profile data using the GitHub API.  
 
-Next, it retrieves complete profile information such as followers, bio, and repositories.  
-The workflow filters high-value users based on conditions (followers > 100 or repos > 50).  
+The workflow filters users based on:
+- Followers > 100 OR  
+- Public repositories > 50  
 
-After filtering, OpenAI is used to generate a personalized one-line sales pitch.  
-Finally, the lead details along with the AI-generated pitch are sent to a Discord channel.  
+Only high-value leads proceed further in the workflow.  
 
-This project demonstrates automation, API integration, and AI usage in a real-world scenario.  
-All sensitive credentials are removed for security purposes.  
+Then, OpenAI is used to analyze the user’s bio and company to generate a one-line personalized sales pitch.  
 
+Finally, the user details and AI-generated pitch are sent to a Discord channel.  
 
+## Logic Log
+GitHub API rate limits are handled by using scheduled polling instead of continuous requests, ensuring controlled API usage and avoiding limit exhaustion.
