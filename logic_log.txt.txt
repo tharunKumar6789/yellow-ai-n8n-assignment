@@ -1,0 +1,24 @@
+=== Logic Log: Assignment 1 - Lead Sniper ===
+
+1. RATE LIMIT HANDLING
+- Registered a GitHub Personal Access Token (PAT)
+- Passed it as "Authorization: Bearer <token>" header
+- This raises the rate limit from 60 to 5000 requests/hour
+- Used Accept: application/vnd.github.v3.star+json for stable API versioning
+
+2. POLLING STRATEGY
+- Used n8n Schedule Trigger every 5 minutes instead of 
+  continuous polling to stay well within rate limits
+
+3. FILTER LOGIC
+- If node filters: followers > 100 OR public_repos > 50
+- Only high-value leads proceed to AI pitch generation
+- Others are dropped on the False branch
+
+4. AI PITCH
+- Used GPT-4o-Mini via n8n's OpenAI node
+- Prompt includes Bio + Company for personalized 1-sentence pitch
+
+5. OUTPUT
+- Formatted message sent to Discord webhook
+- Includes: Username, Company, Bio, AI Pitch, Profile URL

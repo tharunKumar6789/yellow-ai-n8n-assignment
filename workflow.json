@@ -1,0 +1,299 @@
+{
+  "name": "Tharun_kumar_yellow.ai",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a1796664-2974-4427-ab8a-a517811e7e89",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/tiangolo/fastapi/stargazers",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "=Authorization",
+              "value": "=Bearer YOUR_GITHUB_TOKEN"
+            },
+            {
+              "name": "=Accept",
+              "value": "=application/vnd.github.v3.star+json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "39323d22-d5f6-4dba-a3b1-d5a83855f93b",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6f257a95-2add-4bf6-8068-7db25f1450f7",
+              "name": "=username",
+              "value": "={{$json[\"user\"][\"login\"]}}",
+              "type": "string"
+            },
+            {
+              "id": "e0bb8a64-45f9-4d93-8ed1-52ceee7ee030",
+              "name": "=starred_at",
+              "value": "={{$json[\"starred_at\"]}}",
+              "type": "string"
+            },
+            {
+              "id": "6b8ee434-8f1d-4f13-972d-722613e6024b",
+              "name": "=profile_url",
+              "value": "={{$json[\"user\"][\"html_url\"]}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "c1f3dc5b-ef28-4e50-b2c9-01141467b39b",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/users/{{$json[\"username\"]}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "=Authorization",
+              "value": "=Bearer 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"
+            },
+            {
+              "name": "=Accept",
+              "value": "=application/vnd.github+json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        624,
+        0
+      ],
+      "id": "a69fd3bc-02cc-4c74-81df-ebc7e09e113b",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "99b99a75-6cff-4071-a4b5-112ee4f839d0",
+              "leftValue": "={{$json[\"followers\"]}}",
+              "rightValue": 100,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            },
+            {
+              "id": "2c11087f-be48-40d2-868b-31df1a5d3d1f",
+              "leftValue": "={{$json[\"public_repos\"]}}",
+              "rightValue": 50,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        832,
+        0
+      ],
+      "id": "9954f2fa-5dab-4f80-a97e-00f283459146",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=Analyze this GitHub user:\nUsername: {{$json.login}}\nBio: {{$json.bio}}\nCompany: {{$json.company}}\nFollowers: {{$json.followers || 0}}\nPublic Repos: {{$json.public_repos || 0}}\n\nBased on their bio and company, write ONE 1-sentence sales pitch on why we should reach out to them."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1248,
+        -16
+      ],
+      "id": "48c5eaa8-5174-4b6f-9d08-b86762c45c57",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "6TgpKrO8XWmBECji",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://discord.com/api/webhooks/1486382994347524168/FEXBaYxaSV43bx_1wVRnI_utfww9ByvzkDSyU8D9JjusMThSxrTooA9EZDliNxdI_oBQ",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "=content",
+              "value": "=={{\"🚀 High-Value Lead Detected!\\n👤 User: \" + $('HTTP Request1').item.json.login + \"\\n🏢 Company: \" + $('HTTP Request1').item.json.company + \"\\n📝 Bio: \" + $('HTTP Request1').item.json.bio + \"\\n💡 Pitch: \" + $json.output[0].content[0].text + \"\\n🔗 Profile: \" + $('HTTP Request1').item.json.html_url}}"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1696,
+        -16
+      ],
+      "id": "d6b13625-16cb-4989-8d90-1229989c5a11",
+      "name": "HTTP Request2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "9b2ba5b8-7aa5-41fb-8b0f-335b1fc6753d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "33bd2addf660b4b1c1fc8c128f4b262feef0304414d183178903d0f7c5ecf543"
+  },
+  "id": "JLGi12MYyGXy4Jkt",
+  "tags": []
+}
